@@ -21,7 +21,15 @@ def compute_text_features(df: pd.DataFrame, text_column: str = 'text') -> pd.Dat
     """Compute text features: num_characters, num_words, num_sentences."""
     try:
         logging.info("Computing text features")
-        nlp = spacy.load("en_core_web_sm")
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            # If model not found, download it
+            logging.warning("en_core_web_sm model not found, downloading...")
+            import subprocess
+            subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"], check=True)
+            nlp = spacy.load("en_core_web_sm")
+            
         df['num_characters'] = df[text_column].apply(len)
         df['num_words'] = df[text_column].apply(lambda x: len([token for token in nlp(x) if token.is_alpha]))
         df['num_sentences'] = df[text_column].apply(lambda x: len(list(nlp(x).sents)))
