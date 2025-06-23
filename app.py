@@ -49,7 +49,7 @@ if __name__ == '__main__':
         os.makedirs(os.path.dirname(get_artifact_path('model.pkl')), exist_ok=True)
         logging.info("Starting Flask application")
         port = int(os.environ.get('PORT', 5000))
-        app.run(debug=True, host='0.0.0.0', port=port)
+        app.run(debug=False, host='0.0.0.0', port=port)
     except Exception as e:
         logging.error(f"Failed to start Flask app: {str(e)}")
         raise CustomException(e, sys)
