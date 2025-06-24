@@ -16,10 +16,7 @@ class CustomData:
             logging.info("Creating DataFrame from input text")
             data = {'text': [self.text]}
             df = pd.DataFrame(data)
-            
-            # Compute text features using utils
             df = compute_text_features(df)
-            
             logging.info("Input data processed successfully")
             return df
         except Exception as e:
@@ -28,32 +25,24 @@ class CustomData:
 
 class PredictPipeline:
     def __init__(self):
-        self.model_path = os.path.join('artifacts', 'model.pkl')
-        self.preprocessor_path = os.path.join('artifacts', 'preprocessor.pkl')
+        self.model_path = os.path.join('artifacts', 'svm.pkl')
+        self.embeddings_path = os.path.join('artifacts', 'embeddings.pkl')
+        self.label_encoder_path = os.path.join('artifacts', 'label_encoder.pkl')
 
     def predict(self, input_df):
         try:
             logging.info("Starting prediction pipeline")
-            
-            # Generate embeddings using utils
-            df_embeddings = generate_embeddings(input_df['text'].tolist(), self.preprocessor_path)
-            
-            # Combine features with embeddings
+            df_embeddings = generate_embeddings(input_df['text'].tolist(), self.embeddings_path)
             logging.info("Combining features and embeddings for prediction")
             df_combined = pd.concat([input_df[['num_characters', 'num_words', 'num_sentences']], df_embeddings], axis=1)
-            
-            # Validate and prepare DataFrame using utils
             df_combined = validate_and_prepare_dataframe(df_combined)
-            
-            # Load the model
             model = joblib.load(self.model_path)
-            
-            # Make prediction
+            label_encoder = joblib.load(self.label_encoder_path)
             logging.info("Making prediction")
             prediction = model.predict(df_combined)
-            
-            logging.info("Prediction completed successfully")
-            return prediction
+            result = label_encoder.inverse_transform(prediction)[0]
+            logging.info(f"Prediction completed: {result}")
+            return result
         except Exception as e:
             logging.error(f"Error in prediction pipeline: {str(e)}")
             raise CustomException(e, sys)

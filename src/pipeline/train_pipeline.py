@@ -15,23 +15,16 @@ class TrainPipeline:
     def run_pipeline(self):
         try:
             logging.info("Starting training pipeline")
-            
-            # Data Ingestion
             logging.info("Initiating data ingestion")
             train_data_path, test_data_path, _, _ = self.data_ingestion.initiate_data_ingestion()
-            
-            # Data Transformation
             logging.info("Initiating data transformation for training data")
             train_embeddings, train_target, train_embeddings_path, train_target_path = self.data_transformation.initiate_data_transformation(
                 train_data_path, is_train=True
             )
-            
             logging.info("Initiating data transformation for test data")
             test_embeddings, test_target, test_embeddings_path, test_target_path = self.data_transformation.initiate_data_transformation(
                 test_data_path, is_train=False
             )
-            
-            # Model Training
             logging.info("Initiating model training")
             results = self.model_trainer.initiate_model_training(
                 train_embeddings_path=train_embeddings_path,
@@ -39,10 +32,8 @@ class TrainPipeline:
                 test_embeddings_path=test_embeddings_path,
                 test_target_path=test_target_path
             )
-            
             logging.info(f"Training pipeline completed with results: {results}")
             return results
-        
         except Exception as e:
             logging.error(f"Error in training pipeline: {str(e)}")
             raise CustomException(e, sys)

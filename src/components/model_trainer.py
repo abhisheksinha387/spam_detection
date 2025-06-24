@@ -11,7 +11,7 @@ from src.logger import logging
 
 @dataclass
 class ModelTrainerConfig:
-    trained_model_file_path: str = os.path.join('artifacts', 'model.pkl')
+    trained_model_file_path: str = os.path.join('artifacts', 'svm.pkl')
 
 class ModelTrainer:
     def __init__(self):
@@ -20,7 +20,6 @@ class ModelTrainer:
     def initiate_model_training(self, train_embeddings_path, train_target_path, test_embeddings_path, test_target_path):
         logging.info("Entering model training process.")
         try:
-            # Load embeddings and targets
             logging.info(f"Loading train embeddings from {train_embeddings_path} and targets from {train_target_path}")
             X_train = pd.read_csv(train_embeddings_path)
             y_train = pd.read_csv(train_target_path)['target']
@@ -29,7 +28,6 @@ class ModelTrainer:
             y_test = pd.read_csv(test_target_path)['target']
             logging.info("Data loading successful")
 
-            # Validate data
             if X_train.shape[0] != y_train.shape[0]:
                 raise ValueError("Mismatch between train embeddings and target sizes")
             if X_test.shape[0] != y_test.shape[0]:
@@ -37,7 +35,6 @@ class ModelTrainer:
             if X_train.shape[1] != X_test.shape[1]:
                 raise ValueError("Mismatch between train and test feature dimensions")
 
-            # Define the Linear SVM model
             logging.info("Initializing Linear SVM model with GridSearchCV")
             svm_linear = SVC(kernel='linear', probability=True)
             param_grid = {'C': [0.01, 0.1, 1, 10, 100]}
@@ -50,13 +47,11 @@ class ModelTrainer:
                 n_jobs=-1
             )
 
-            # Train the model
             logging.info("Training model with GridSearchCV")
             grid_search.fit(X_train, y_train)
             logging.info(f"Best parameters: {grid_search.best_params_}")
             logging.info(f"Best F1 score from CV: {grid_search.best_score_:.4f}")
 
-            # Evaluate on test set
             logging.info("Evaluating model on test set")
             best_model = grid_search.best_estimator_
             y_pred = best_model.predict(X_test)
@@ -65,7 +60,6 @@ class ModelTrainer:
             test_precision = precision_score(y_test, y_pred, zero_division=0)
             test_recall = recall_score(y_test, y_pred, zero_division=0)
             test_roc_auc = roc_auc_score(y_test, y_pred)
-
             logging.info("Test set metrics:")
             logging.info(f"- Accuracy: {test_accuracy:.4f}")
             logging.info(f"- F1 Score: {test_f1:.4f}")
@@ -75,11 +69,9 @@ class ModelTrainer:
             logging.info("\nClassification Report:")
             logging.info(classification_report(y_test, y_pred, output_dict=False))
 
-            # Save the model
             logging.info(f"Saving trained model to {self.model_trainer_config.trained_model_file_path}")
             joblib.dump(best_model, self.model_trainer_config.trained_model_file_path)
             logging.info("Model saved successfully")
-
             logging.info("Model training completed")
             return {
                 'test_accuracy': test_accuracy,
@@ -89,7 +81,6 @@ class ModelTrainer:
                 'test_roc_auc': test_roc_auc,
                 'best_params': grid_search.best_params_
             }
-
         except Exception as e:
             raise CustomException(e, sys)
 
