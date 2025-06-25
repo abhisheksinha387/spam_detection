@@ -1,7 +1,6 @@
 # Video Tutorial : https://youtu.be/LguLwZd8V3w
 # Working demo   : https://huggingface.co/spaces/abhisheksinha7742/spam_detector
 # (Note : demo is in hugging face and uses gradio and not flask)
-Below is the updated README with a **License** section added and the formatting corrected for consistency and clarity. I've also fixed minor formatting issues (e.g., inconsistent headings, code block syntax, and instructions) to ensure a polished and professional appearance. The structure remains the same, and the content is preserved unless clarification or formatting improvements were needed.
 
 ---
 
