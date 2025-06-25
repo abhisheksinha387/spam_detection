@@ -50,7 +50,7 @@ This project implements a spam detection system that:
 ```
 spam_detection/
 ├── notebooks/
-│   └── spam.csv                 # Dataset file
+│   └── spam.csv                    # Dataset file
 ├── src/
 │   ├── components/
 │   │   ├── data_ingestion.py       # Data loading & splitting
@@ -63,15 +63,13 @@ spam_detection/
 │   ├── logger.py                   # Logging utility
 │   ├── utils.py                    # Utility functions
 ├── templates/
-│   └── index.html              # HTML template for Flask UI
-├── app.py                      # Flask web app entry point
-├── requirements.txt            # Python dependencies
-├── setup.py                    # Setup file
-├── .gitignore                  # Ignored files
-├── README.md                   # This file
+│   └── index.html                  # HTML template for Flask UI
+├── app.py                          # Flask web app entry point
+├── requirements.txt                # Python dependencies
+├── setup.py                        # Setup file
+├── .gitignore                      # Ignored files
+├── README.md                       # This file
 ```
-
-> **Note:** `logs/` and `artifacts/` are generated at runtime and ignored by Git.
 
 ---
 
@@ -98,7 +96,9 @@ cd spam-detection
 
 ```bash
 python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
+Windows: venv\Scripts\activate
+macOs  : source venv/bin/activate
+Linux  : source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
@@ -119,15 +119,15 @@ Alternatively, update `data_ingestion.py` to download from a URL.
 
 ---
 
-### 5. Run the Training Pipeline
+### 5. Run the Data Ingestion
 
 ```bash
-python -m src.pipeline.train_pipeline
+python -m src.pipeline.data_ingestion.py
 ```
 
 Generates `artifacts/`:
 
-* `model.pkl`, `preprocessor.pkl`
+* `embeddings.pkl`, `label_encoder.pkl`
 * `train.csv`, `test.csv`, `data.csv`
 * `train_embeddings.csv`, `test_embeddings.csv`
 * `train_target.csv`, `test_target.csv`
@@ -208,10 +208,10 @@ git push origin main
 
 ```python
 # data_ingestion.py
-train_data_path = os.path.join('/app/artifacts', 'train.csv')
+train_data_path = os.path.join('/app/artifacts', 'train.csv','test.csv','data.csv')
 ...
 # data_transformation.py
-preprocessor_obj_file_path = os.path.join('/app/artifacts', 'preprocessor.pkl')
+preprocessor_obj_file_path = os.path.join('/app/artifacts', 'embeddings.pkl','label_encoder.pkl')
 ...
 ```
 
@@ -249,6 +249,5 @@ df = pd.read_csv('temp_spam.csv', encoding='latin-1')
 * **Source**: [Kaggle - SMS Spam Collection](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset)
 
 ---
-
 
 
